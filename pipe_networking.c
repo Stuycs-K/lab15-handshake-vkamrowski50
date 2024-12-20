@@ -50,8 +50,8 @@ int client_handshake(int *to_server) {
   char PP[40];
   sprintf(PP,"%d",getpid());
   mkfifo(PP,0666);
-  int firstopen = open(WKF,O_WRONLY);
-  write(WKF,PP,sizeof(PP));
+  int firstopen = open(WKP,O_WRONLY);
+  write(WKP,PP,sizeof(PP));
   int firstread = open(PP,O_RDONLY);
   return from_server;
 }
