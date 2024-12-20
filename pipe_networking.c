@@ -13,7 +13,11 @@ int server_setup() {
   int from_client;
   mkfifo(WKP,0666);
   int file = open(WKP,O_RDONLY);
+  char privpipe[40];
+  write(file,privpipe,sizeof(privpipe));
+  from_client = open(privpipe,O_WRONLY);
   remove(file);
+
   return from_client;
 }
 
@@ -43,12 +47,12 @@ int server_handshake(int *to_client) {
   =========================*/
 int client_handshake(int *to_server) {
   int from_server;
-  char buffer[40];
-  sprintf(buffer,"%d",getpid());
-  mkfifo(buffer,0666);
+  char PP[40];
+  sprintf(PP,"%d",getpid());
+  mkfifo(PP,0666);
   int firstopen = open(WKF,O_WRONLY);
-  write(WKF,buffer,sizeof(buffer));
-  int firstread = open(buffer,O_RDONLY);
+  write(WKF,PP,sizeof(PP));
+  int firstread = open(PP,O_RDONLY);
   return from_server;
 }
 
