@@ -11,13 +11,24 @@
   =========================*/
 int server_setup() {
   int from_client;
-  mkfifo(WKP,0666);
-  int file = open(WKP,O_RDONLY);
-  char privpipe[40];
-  write(file,privpipe,sizeof(privpipe));
-  from_client = open(privpipe,O_WRONLY);
-  remove(file);
+  printf("Server: Creating WKP\n");
+  if(mkfifo(WKP,0666)==-1){
+    perror("Server: Error creating WKP\n");
+    exit(1);
+  }
 
+  printf("Server: Opening WKP (BLOCKS)\n");
+  from_client = open(WKP, O_RDONLY);
+  if(from_client==-1){
+    perror("Server: Error opening WKP\n");
+    exit(1);
+  }
+
+  printf("Server: Removing WKP\n");
+  if(remove(WKP)==-1){
+    perror("Server: Error removing WKP\n");
+    exit(1);
+  }
   return from_client;
 }
 
