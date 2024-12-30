@@ -52,6 +52,14 @@ int server_handshake(int *to_client) {
   }
   printf("Server received PP: %s\n",private_pipe);
 
+  printf("Server Step 6: Opening PP\n");
+  *to_client = open(private_pipe,O_WRONLY);
+  if(*to_client==-1){
+    perror("Server: Error opening PP\n");
+    exit(1);
+  }
+
+  
   return from_client;
 }
 
