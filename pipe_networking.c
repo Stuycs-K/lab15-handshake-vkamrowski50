@@ -59,7 +59,22 @@ int server_handshake(int *to_client) {
     exit(1);
   }
 
-  
+  char syn_ack[] = "SYN_ACK";
+  printf("Server Step 7: Sending SYN_ACK\n");
+  if(write(*to_client,syn_ack,sizeof(syn_ack))==-1){
+    perror("Server: Error sending SYN_ACK\n");
+    exit(1);
+  }
+
+  char final_ack[HANDSHAKE_BUFFER_SIZE];
+  printf("Server Step 9: Reading final ACK\n");
+  if(read(from_client,final_ack,HANDSHAKE_BUFFER_SIZE)==-1){
+    perror("Server: Error reading final ACK\n");
+    exit(1);
+  }
+  printf("Server: Handshake complete. Final ACK: %s\n",final_ack);
+
+
   return from_client;
 }
 
@@ -106,6 +121,28 @@ int client_handshake(int *to_server) {
     remove(private_pipe);
     exit(1);
   }
+
+  printf("Client Step 8: Deleting PP\n");
+  if(remove(private_pipe)==-1){
+    perror("Client: Error removing PP\n");
+    exit(1);
+  }
+
+  char syn_ack[HANDSHAKE_BUFFER_SIZE];
+  printf("Client Step 8: Reading SYN_ACK\n");
+  if(read(from_server,syn_ack,HANDSHAKE_BUFFER_SIZE)==-1){
+    perror("Client: Error reading SYN_ACK\n");
+    exit(1);
+  }
+
+  char final_ack[] = "ACK";
+  printf("Client Step 8: Sending final ACK\n");
+  if(write(*to_server,final_ack,sizeof(final_ack))==-1){
+    perror("Client: Error sending final ACK");
+    exit(1);
+  }
+
+  printf("Client: Handshake complete.\n");
 
   return from_server;
 }
