@@ -6,7 +6,7 @@ server: persistant_server.o pipe_networking.o
 	gcc -o server persistant_server.o pipe_networking.o
 
 basic_client.o: basic_client.c pipe_networking.h
-	gcc -c persistant_server.c
+	gcc -c basic_client.c
 
 persistant_server.o: persistant_server.c pipe_networking.h
 	gcc -c persistant_server.c

@@ -1,5 +1,6 @@
 #include "pipe_networking.h"
 #include <signal.h>
+#include <time.h>
 static void sighandler(int signo) {
     if ( signo == SIGINT ){
       printf("Removing WKP\n");
@@ -14,12 +15,22 @@ static void sighandler(int signo) {
 int main() {
   int to_client;
   int from_client;
-  remove(WKP);
+  signal(SIGINT, sighandler);
+  signal(SIGPIPE,SIG_IGN);
+  srand(time(NULL));
   while(1){
-    signal(SIGINT, sighandler);
   from_client = server_handshake( &to_client );
+  while(1){
+  int randnum = rand()%101;
+  if(write(to_client,&randnum,sizeof(randnum))==-1){
+    perror("Server: Client disconnected\n");
+    break;
+  }
+  printf("Server: Sending random number: %d\n",randnum);
   sleep(1);
+  }
   close(to_client);
   close(from_client);
 }
 }
+
