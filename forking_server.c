@@ -55,17 +55,33 @@ int main() {
   signal(SIGPIPE,SIG_IGN);
   srand(time(NULL));
   while(1){
-  from_client = server_handshake( &to_client );
+    printf("Server: Waiting for client\n");
+  from_client = server_setup();
+  printf("Server: Client connected, forking a subserver\n");
+  pid_t pid = fork();
+  if(pid==0){
+    to_client = 0;
+    from_client = server_handshake_half(&to_client,from_client);
+    printf("Communication with client %d started\n",getpid());
+  
   while(1){
   int randnum = rand()%101;
   if(write(to_client,&randnum,sizeof(randnum))==-1){
     perror("Server: Client disconnected\n");
     break;
   }
-  //printf("Server: Sending random number: %d\n",randnum);
   sleep(1);
   }
   close(to_client);
   close(from_client);
+  exit(0);
+  }
+  else if (pid>0){
+    close(from_client);
+  }
+  else{
+    perror("Server forking error\n");
+    exit(1);
+  }
 }
 }
